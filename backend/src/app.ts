@@ -11,7 +11,7 @@ app.use(
   cors({
     origin: (origin, callback) => {
       // Allow localhost on any port during development
-      if (!origin || origin.startsWith("http://localhost")) {
+      if (!origin || origin.startsWith("https://mern-ai-chat-bot-x4iu.vercel.app" )) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
@@ -20,6 +20,7 @@ app.use(
     credentials: true,
   })
 );
+app.options("*", cors());
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
