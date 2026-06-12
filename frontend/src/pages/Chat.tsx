@@ -66,10 +66,15 @@ const Chat = () => {
     }
   }, [auth]);
   useEffect(() => {
-    if (!auth?.user) {
+    if (!auth?.isAuthLoading && !auth?.user) {
       navigate("/login");
     }
   }, [auth, navigate]);
+
+  if (auth?.isAuthLoading) {
+    return null;
+  }
+
   return (
     <Box
       sx={{

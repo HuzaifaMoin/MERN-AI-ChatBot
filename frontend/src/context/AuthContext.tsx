@@ -18,6 +18,7 @@ type User = {
 };
 type UserAuth = {
   isLoggedIn: boolean;
+  isAuthLoading: boolean;
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<void>;
@@ -28,6 +29,7 @@ const AuthContext = createContext<UserAuth | null>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   useEffect(() => {
     // fetch if the user's cookies are valid then skip login
@@ -41,6 +43,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } catch (error) {
         // 401 Unauthorized is expected when user is not logged in
         console.log("User not authenticated");
+      } finally {
+        setIsAuthLoading(false);
       }
     }
     checkStatus();
@@ -69,6 +73,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const value = {
     user,
     isLoggedIn,
+    isAuthLoading,
     login,
     logout,
     signup,
