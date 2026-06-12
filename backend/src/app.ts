@@ -9,7 +9,7 @@ const app = express();
 //middlewares
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://mern-ai-chat-bot-h5kn.vercel.app",
+  
   ...(process.env.CLIENT_ORIGIN?.split(",").map((origin) => origin.trim()).filter(Boolean) ?? []),
 ];
 
