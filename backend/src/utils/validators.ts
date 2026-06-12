@@ -18,18 +18,32 @@ export const validate = (validations: ValidationChain[]) => {
 };
 
 export const loginValidator = [
-  body("email").trim().isEmail().withMessage("Email is required"),
+  body("email")
+    .trim()
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Please enter a valid email"),
+
   body("password")
     .trim()
+    .notEmpty()
+    .withMessage("Password is required")
     .isLength({ min: 6 })
-    .withMessage("Password should contain atleast 6 characters"),
+    .withMessage("Password must be at least 6 characters long"),
 ];
 
 export const signupValidator = [
-  body("name").notEmpty().withMessage("Name is required"),
+  body("name")
+    .trim()
+    .notEmpty()
+    .withMessage("Name is required"),
   ...loginValidator,
 ];
 
 export const chatCompletionValidator = [
-  body("message").notEmpty().withMessage("Message  is required"),
+  body("message")
+    .trim()
+    .notEmpty()
+    .withMessage("Message is required"),
 ];

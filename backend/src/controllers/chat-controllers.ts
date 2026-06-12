@@ -20,18 +20,30 @@ export const generateChatCompletion = async (
     chats.push({ content: message, role: "user" });
     user.chats.push({ content: message, role: "user" });
 
-    // send all chats with new one to openAI API
+    // send all chats with new one to Gemini API
     const config = configureGemini();
+    const model = config.getGenerativeModel({ model: "gemini-2.5-flash" });
+    
+    // Format messages for Gemini - it expects an array of content objects
+    const formattedChats = chats.map(chat => ({
+      role: chat.role === "user" ? "user" : "model",
+      parts: [{ text: chat.content ?? "" }]
+    }));
+    
     // get latest response
-    const chatResponse = await config.getGenerativeModel({ model: "gemini-chat" }).generateContent(
-      chats.map(chat => chat.content ?? "")
-    );
-    user.chats.push({ role: "assistant", content: chatResponse.response.text() });
+    const chatResponse = await model.generateContent({
+      contents: formattedChats,
+    });
+    
+    const responseText = chatResponse.response.text();
+    user.chats.push({ role: "assistant", content: responseText });
     await user.save();
     return res.status(200).json({ chats: user.chats });
   } catch (error: any) {
-    console.log(error);
-    return res.status(500).json({ message: "Something went wrong" });
+     console.error("🔥 FULL GEMINI ERROR:", error);
+  return res.status(500).json({
+    message: "Something went wrong",
+    error: error?.message,})
   }
 };
 
