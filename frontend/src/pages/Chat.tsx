@@ -99,7 +99,11 @@ const Chat = () => {
               fontWeight: 700,
             }}
           >
-            {auth?.user?.name?.split(" ")?.[1]?.[0] || auth?.user?.name?.[0]}          </Avatar>
+            {auth?.user?.name
+              ?.split(" ")
+              ?.map((n) => n?.[0])
+              ?.join("")
+              ?.toUpperCase() || "U"}          </Avatar>
           <Typography sx={{ mx: "auto", fontFamily: "work sans" }}>
             You are talking to a ChatBOT
           </Typography>
