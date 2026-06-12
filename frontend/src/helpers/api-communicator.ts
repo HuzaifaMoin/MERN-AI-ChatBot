@@ -1,11 +1,16 @@
 import axios from "axios";
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ??
+  (import.meta.env.DEV
+    ? "/api/v1"
+    : "https://mern-ai-chat-bot-delta.vercel.app/api/v1");
+
 // Create a custom axios instance with error handling
-export const axiosInstance = axios.create(
-  {baseURL: "https://mern-ai-chat-bot-delta.vercel.app/api/v1",  
-      withCredentials: true,
-  }
-);
+export const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,
+});
 
 // Add response interceptor to handle 401 silently for auth-status
 axiosInstance.interceptors.response.use(

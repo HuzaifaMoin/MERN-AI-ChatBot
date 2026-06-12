@@ -6,6 +6,6 @@ export const authCookieOptions: CookieOptions = {
   path: "/",
   httpOnly: true,
   signed: true,
-  sameSite: "none",
-  secure: true,
+  sameSite: isProduction ? "none" : "lax",
+  secure: isProduction,
 };

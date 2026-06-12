@@ -2,26 +2,39 @@ import express from "express";
 import { config } from "dotenv";
 import appRouter from "./routes/index.js";
 import cookieParser from "cookie-parser";
-import cors, { CorsOptions } from "cors";
+import cors from "cors";
 config();
 const app = express();
 
-//middlewares
-app.use(cors({
-  origin: [
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
   "https://mern-ai-chat-bot-hi5c.vercel.app",
-  "localhost:5173",
-],
-credentials: true,
-}) 
-);
-app.options("*", cors( {
-  origin: [
-    "https://mern-ai-chat-bot-hi5c.vercel.app",
-    "localhost:5173",
-  ],
+  process.env.FRONTEND_URL,
+  process.env.CORS_ORIGINS,
+]
+  .flatMap((origin) => origin?.split(",") ?? [])
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const corsOptions = {
+  origin: (
+    origin: string | undefined,
+    callback: (error: Error | null, allow?: boolean) => void
+  ) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error(`Origin ${origin} is not allowed by CORS`));
+  },
   credentials: true,
-})); // Enable pre-flight for all routes
+};
+
+//middlewares
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Enable pre-flight for all routes
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
