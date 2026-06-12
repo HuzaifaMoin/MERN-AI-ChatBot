@@ -7,15 +7,21 @@ config();
 const app = express();
 
 //middlewares
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://mern-ai-chat-bot-two.vercel.app",
+];
+
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow localhost on any port during development
-      if (!origin || origin.startsWith("https://mern-ai-chat-bot-x4iu.vercel.app" )) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
       }
+
+      return callback(null, false);
     },
     credentials: true,
   })
