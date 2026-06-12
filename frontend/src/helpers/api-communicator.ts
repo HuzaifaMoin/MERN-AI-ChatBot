@@ -2,7 +2,10 @@ import axios from "axios";
 
 // Create a custom axios instance with error handling
 export const axiosInstance = axios.create(
-  {baseURL: import.meta.env.VITE_API_URL ?? "https://mern-ai-chat-bot-delta.vercel.app/",
+  {baseURL: "https://mern-ai-chat-bot-delta.vercel.app/api/v1",
+      headers: {
+        "Content-Type": "application/json",
+      },  
       withCredentials: true,
   }
 );

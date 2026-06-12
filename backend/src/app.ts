@@ -8,9 +8,7 @@ const app = express();
 
 //middlewares
 const allowedOrigins = [
-  "http://localhost:5173",
-  "https://mern-ai-chat-bot-hi5c.vercel.app",
-  ...(process.env.CLIENT_ORIGIN?.split(",").map((origin) => origin.trim()).filter(Boolean) ?? []),
+  "https://mern-ai-chat-bot-hi5c.vercel.app"
 ];
 
 const corsOptions: CorsOptions = {
