@@ -2,7 +2,7 @@ import express from "express";
 import { config } from "dotenv";
 import appRouter from "./routes/index.js";
 import cookieParser from "cookie-parser";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 config();
 const app = express();
 
@@ -10,26 +10,24 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "https://mern-ai-chat-bot-h5kn.vercel.app",
+  ...(process.env.CLIENT_ORIGIN?.split(",").map((origin) => origin.trim()).filter(Boolean) ?? []),
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
+const corsOptions: CorsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
 
-      return callback(null, false);
-    },
-    credentials: true,
-  })
-);
-app.options("*", cors({
-  origin: allowedOrigins,
+    return callback(null, false);
+  },
   credentials: true,
-}));
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 

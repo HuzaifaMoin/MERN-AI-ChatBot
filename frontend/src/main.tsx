@@ -6,9 +6,6 @@ import { createTheme, ThemeProvider } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext.tsx";
 import { Toaster } from "react-hot-toast";
-import axios from "axios";
-axios.defaults.baseURL = "https://mern-ai-chat-bot-two.vercel.app/api/v1";
-axios.defaults.withCredentials = true;
 const theme = createTheme({
   typography: {
     fontFamily: "Roboto Slab,serif",

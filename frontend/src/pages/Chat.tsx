@@ -22,14 +22,23 @@ const Chat = () => {
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const handleSubmit = async () => {
     const content = inputRef.current?.value as string;
+    if (!content.trim()) return;
     if (inputRef && inputRef.current) {
       inputRef.current.value = "";
     }
     const newMessage: Message = { role: "user", content };
     setChatMessages((prev) => [...prev, newMessage]);
-    const chatData = await sendChatRequest(content);
-    setChatMessages([...chatData.chats]);
-    //
+    try {
+      const chatData = await sendChatRequest(content);
+      setChatMessages([...chatData.chats]);
+    } catch (error: any) {
+      console.log(error);
+      toast.error("Please sign in again");
+      if (error?.response?.status === 401) {
+        setChatMessages([]);
+        window.location.href = "/login";
+      }
+    }
   };
   const handleDeleteChats = async () => {
     try {
