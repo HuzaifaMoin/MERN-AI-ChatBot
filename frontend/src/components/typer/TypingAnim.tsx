@@ -13,7 +13,7 @@ const TypingAnim = () => {
 
   useEffect(() => {
     let charIndex = 0;
-    let timeout: NodeJS.Timeout;
+    let timeout: ReturnType<typeof setTimeout>;
     const phrase = phrases[currentPhrase];
 
     const type = () => {

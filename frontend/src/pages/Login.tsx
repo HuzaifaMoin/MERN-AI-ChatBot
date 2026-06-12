@@ -69,14 +69,14 @@ const Login = () => {
             <CustomizedInput
               type="email"
               name="email"
-              label="Email" value={""} onChange={function (e: React.ChangeEvent<HTMLInputElement>): void {
+              label="Email" value={""} onChange={function (): void {
                 throw new Error("Function not implemented.");
               } }            />
 
             <CustomizedInput
               type="password"
               name="password"
-              label="Password" value={""} onChange={function (e: React.ChangeEvent<HTMLInputElement>): void {
+              label="Password" value={""} onChange={function (): void {
                 throw new Error("Function not implemented.");
               } }            />
             <Button
