@@ -7,25 +7,21 @@ config();
 const app = express();
 
 //middlewares
-const allowedOrigins = [
-  "https://mern-ai-chat-bot-hi5c.vercel.app"
-];
-
-const corsOptions: CorsOptions = {
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-
-    return callback(null, false);
-  },
+app.use(cors({
+  origin: [
+  "https://mern-ai-chat-bot-hi5c.vercel.app",
+  "localhost:5173",
+],
+credentials: true,
+}) 
+);
+app.options("*", cors( {
+  origin: [
+    "https://mern-ai-chat-bot-hi5c.vercel.app",
+    "localhost:5173",
+  ],
   credentials: true,
-};
-
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+})); // Enable pre-flight for all routes
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
