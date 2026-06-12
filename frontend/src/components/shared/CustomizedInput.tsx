@@ -14,7 +14,7 @@ const CustomizedInput = (props: Props) => {
       margin="normal"
       name={props.name}
       label={props.label}
-      type={props.type}
+      type={props.type || "text"}
       value={props.value}
       onChange={props.onChange}
       slotProps={{

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { IoIosLogIn } from "react-icons/io";
 import { Box, Typography, Button } from "@mui/material";
 import CustomizedInput from "../components/shared/CustomizedInput";
@@ -6,6 +6,8 @@ import { toast } from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const auth = useAuth();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -67,18 +69,18 @@ const Login = () => {
               Login
             </Typography>
             <CustomizedInput
-              type="email"
               name="email"
-              label="Email" value={""} onChange={function (): void {
-                throw new Error("Function not implemented.");
-              } }            />
+              label="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)} type={""}            />
 
             <CustomizedInput
-              type="password"
               name="password"
-              label="Password" value={""} onChange={function (): void {
-                throw new Error("Function not implemented.");
-              } }            />
+              label="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
             <Button
               type="submit"
               sx={{
