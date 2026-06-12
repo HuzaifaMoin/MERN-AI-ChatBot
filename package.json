@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@google/generative-ai": "^0.24.1",
-    "react-syntax-highlighter": "^16.1.1"
-  }
-}
