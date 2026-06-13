@@ -4,7 +4,7 @@ const API_BASE_URL =
   import.meta.env.VITE_API_URL ??
   (import.meta.env.DEV
     ? "/api/v1"
-    : "https://mern-ai-chat-bot-six.vercel.app/api/v1");
+    : "https://mern-ai-chat-bot-six.vercel.app");
 
 // Create a custom axios instance with error handling
 export const axiosInstance = axios.create({
