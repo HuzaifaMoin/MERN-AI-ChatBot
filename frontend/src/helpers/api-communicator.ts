@@ -3,7 +3,7 @@ import axios from "axios";
 const API_BASE_URL =
   import.meta.env.VITE_API_URL ??
   (import.meta.env.DEV
-    ? "/api/v1"
+    ? "http://localhost:5000/api/v1"
     : "https://mern-ai-chat-bot-six.vercel.app/api/v1");
 
 // Create a custom axios instance with error handling
