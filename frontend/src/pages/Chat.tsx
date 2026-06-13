@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Box, Avatar, Typography, Button, IconButton } from "@mui/material";
 import { red } from "@mui/material/colors";
 import { useAuth } from "../context/AuthContext";
@@ -20,7 +20,12 @@ const Chat = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const auth = useAuth();
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const handleSubmit = async () => {
+    if (auth?.isAuthLoading || !auth?.isLoggedIn || !auth.user || isSubmitting) {
+      return;
+    }
+
     const content = inputRef.current?.value as string;
     if (!content.trim()) return;
     if (inputRef && inputRef.current) {
@@ -29,15 +34,19 @@ const Chat = () => {
     const newMessage: Message = { role: "user", content };
     setChatMessages((prev) => [...prev, newMessage]);
     try {
+      setIsSubmitting(true);
       const chatData = await sendChatRequest(content);
       setChatMessages([...chatData.chats]);
     } catch (error: any) {
       console.log(error);
       toast.error("Please sign in again");
       if (error?.response?.status === 401) {
+        await auth?.logout();
         setChatMessages([]);
-        window.location.href = "/login";
+        navigate("/login", { replace: true });
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
   const handleDeleteChats = async () => {
@@ -51,25 +60,48 @@ const Chat = () => {
       toast.error("Deleting chats failed", { id: "deletechats" });
     }
   };
-  useLayoutEffect(() => {
-    if (auth?.isLoggedIn && auth.user) {
-      toast.loading("Loading Chats", { id: "loadchats" });
-      getUserChats()
-        .then((data) => {
-          setChatMessages([...data.chats]);
-          toast.success("Successfully loaded chats", { id: "loadchats" });
-        })
-        .catch((err) => {
-          console.log(err);
-          toast.error("Loading Failed", { id: "loadchats" });
-        });
-    }
-  }, [auth]);
   useEffect(() => {
-    if (!auth?.isAuthLoading && !auth?.user) {
-      navigate("/login");
+    let isMounted = true;
+
+    const loadChats = async () => {
+      if (auth?.isAuthLoading) return;
+
+      if (!auth?.isLoggedIn || !auth.user) {
+        setChatMessages([]);
+        navigate("/login", { replace: true });
+        return;
+      }
+
+      try {
+        toast.loading("Loading Chats", { id: "loadchats" });
+        const data = await getUserChats();
+        if (!isMounted) return;
+        setChatMessages([...data.chats]);
+        toast.success("Successfully loaded chats", { id: "loadchats" });
+      } catch (err: any) {
+        if (!isMounted) return;
+        console.log(err);
+        toast.error("Loading Failed", { id: "loadchats" });
+        if (err?.response?.status === 401) {
+          await auth?.logout();
+          navigate("/login", { replace: true });
+        }
+      }
+    };
+
+    loadChats();
+
+    return () => {
+      isMounted = false;
+      toast.dismiss("loadchats");
+    };
+  }, [auth?.isAuthLoading, auth?.isLoggedIn, auth?.user, auth?.logout, navigate]);
+
+  useEffect(() => {
+    if (!auth?.isAuthLoading && !auth?.isLoggedIn) {
+      navigate("/login", { replace: true });
     }
-  }, [auth, navigate]);
+  }, [auth?.isAuthLoading, auth?.isLoggedIn, navigate]);
 
   if (auth?.isAuthLoading) {
     return null;
@@ -205,7 +237,11 @@ const Chat = () => {
               fontSize: "20px",
             }}
           />
-          <IconButton onClick={handleSubmit} sx={{ color: "white", mx: 1 }}>
+          <IconButton
+            disabled={isSubmitting || auth?.isAuthLoading || !auth?.isLoggedIn}
+            onClick={handleSubmit}
+            sx={{ color: "white", mx: 1 }}
+          >
             <IoMdSend />
           </IconButton>
         </div>

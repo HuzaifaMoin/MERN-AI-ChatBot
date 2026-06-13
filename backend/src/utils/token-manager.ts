@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { COOKIE_NAME } from "./constants.js";
-import { signedCookies } from "cookie-parser";
 
 export const createToken = (id: string, email: string, expiresIn: string) => {
   const payload = { id, email };
@@ -16,17 +15,20 @@ export const createToken = (id: string, email: string, expiresIn: string) => {
 
 export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
   const token = req.signedCookies?.[COOKIE_NAME];
-  console.log("cookies:", req.cookies);
-console.log("signedCookies:", req.signedCookies);
 
   if (!token) {
     return res.status(401).json({ message: "Token Not Received" });
   }
 
-  const secret = process.env.JWT_SECRET;
+  if (token === false) {
+    return res.status(401).json({ message: "Invalid Token Signature" });
+  }
 
-  if (!secret) {
-    return res.status(500).json({ message: "JWT not configured" });
+  const secret = process.env.JWT_SECRET;
+  const cookieSecret = process.env.COOKIE_SECRET;
+
+  if (!secret || !cookieSecret) {
+    return res.status(500).json({ message: "Auth secrets not configured" });
   }
 
   try {

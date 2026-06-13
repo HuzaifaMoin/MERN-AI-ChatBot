@@ -26,10 +26,10 @@ const Login = () => {
     }
   };
   useEffect(() => {
-    if (auth?.user) {
-      navigate("/chat");
+    if (!auth?.isAuthLoading && auth?.isLoggedIn) {
+      navigate("/chat", { replace: true });
     }
-  }, [auth, navigate]);
+  }, [auth?.isAuthLoading, auth?.isLoggedIn, navigate]);
   return (
     <Box sx={{ width: "100%", height: "100%", display: "flex", flex: 1 }}>
       <Box sx={{ padding: 8, mt: 8, display: { md: "flex", sm: "none", xs: "none" } }}>

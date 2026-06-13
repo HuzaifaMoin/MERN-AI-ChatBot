@@ -5,11 +5,15 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 config();
 const app = express();
+app.set("trust proxy", 1);
 
 const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   "https://mern-ai-chat-bot-xmkd.vercel.app",
+  process.env.FRONTEND_URL,
+  process.env.CLIENT_URL,
+  process.env.CORS_ORIGIN,
 ]
   .flatMap((origin) => origin?.split(",") ?? [])
   .map((origin) => origin.trim())

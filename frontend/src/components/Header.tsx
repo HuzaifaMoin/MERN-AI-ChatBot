@@ -3,9 +3,19 @@ import Toolbar from "@mui/material/Toolbar";
 import Logo from "./shared/Logo";
 import { useAuth } from "../context/AuthContext";
 import NavigationLink from "./shared/NavigationLink";
+import { useNavigate } from "react-router-dom";
+import type { MouseEvent } from "react";
 
 const Header = () => {
   const auth = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    await auth?.logout();
+    navigate("/login", { replace: true });
+  };
+
   return (
     <AppBar
       sx={{ bgcolor: "transparent", position: "static", boxShadow: "none" }}
@@ -13,7 +23,7 @@ const Header = () => {
       <Toolbar sx={{ display: "flex" }}>
         <Logo />
         <div>
-          {auth?.isLoggedIn ? (
+          {auth?.isAuthLoading ? null : auth?.isLoggedIn ? (
             <>
               <NavigationLink
                 bg="#00fffc"
@@ -24,9 +34,9 @@ const Header = () => {
               <NavigationLink
                 bg="#51538f"
                 textColor="white"
-                to="/"
+                to="/login"
                 text="logout"
-                onClick={auth.logout}
+                onClick={handleLogout}
               />
             </>
           ) : (

@@ -1,3 +1,4 @@
+import type { MouseEventHandler } from "react";
 import { Link } from "react-router-dom";
 
 type Props = {
@@ -5,7 +6,7 @@ type Props = {
   bg: string;
   text: string;
   textColor: string;
-  onClick?: () => Promise<void>;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
 };
 const NavigationLink = (props: Props) => {
   return (

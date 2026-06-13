@@ -1,8 +1,10 @@
 import {
   type ReactNode,
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import {
@@ -32,53 +34,71 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+
     // fetch if the user's cookies are valid then skip login
     async function checkStatus() {
       try {
         const data = await checkAuthStatus();
-        if (data) {
+        if (data && isMounted) {
           setUser({ email: data.email, name: data.name });
           setIsLoggedIn(true);
         }
       } catch (error) {
         // 401 Unauthorized is expected when user is not logged in
-        console.log("User not authenticated");
+        if (isMounted) {
+          setUser(null);
+          setIsLoggedIn(false);
+        }
       } finally {
-        setIsAuthLoading(false);
+        if (isMounted) {
+          setIsAuthLoading(false);
+        }
       }
     }
     checkStatus();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
-  const login = async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     const data = await loginUser(email, password);
     if (data) {
-      setUser({ email: data.email, name: data.name
-       });
+      setUser({ email: data.email, name: data.name });
       setIsLoggedIn(true);
+      setIsAuthLoading(false);
     }
-  };
-  const signup = async (name: string, email: string, password: string) => {
+  }, []);
+  const signup = useCallback(async (name: string, email: string, password: string) => {
     const data = await signupUser(name, email, password);
     if (data) {
       setUser({ email: data.email, name: data.name });
       setIsLoggedIn(true);
+      setIsAuthLoading(false);
     }
-  };
-  const logout = async () => {
-    await logoutUser();
-    setIsLoggedIn(false);
-    setUser(null);
-    window.location.reload();
-  };
+  }, []);
+  const logout = useCallback(async () => {
+    try {
+      await logoutUser();
+    } finally {
+      setIsLoggedIn(false);
+      setUser(null);
+      setIsAuthLoading(false);
+    }
+  }, []);
 
-  const value = {
-    user,
-    isLoggedIn,
-    isAuthLoading,
-    login,
-    logout,
-    signup,
-  };
+  const value = useMemo(
+    () => ({
+      user,
+      isLoggedIn,
+      isAuthLoading,
+      login,
+      logout,
+      signup,
+    }),
+    [user, isLoggedIn, isAuthLoading, login, logout, signup]
+  );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
