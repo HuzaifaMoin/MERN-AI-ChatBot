@@ -5,7 +5,7 @@ import babel from '@rolldown/plugin-babel'
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const apiProxyTarget = env.VITE_API_PROXY_TARGET || 'http://localhost:5000'
+  const apiProxyTarget = env.VITE_API_PROXY_TARGET || 'https://mern-ai-chat-bot-six.vercel.app/api/v1'
 
   return {
     plugins: [
